@@ -1,0 +1,17 @@
+.app {
+}
+
+table { 
+    width: 90%;
+    table-layout: fixed;
+}
+
+.leftLock {
+    width: 200px;
+}
+
+.tsinfolink {
+    position:absolute;
+    right:0px;
+    width:5%;
+}
