@@ -3,7 +3,7 @@ Ext.define('CustomApp', {
     componentCls: 'app',
 
     pi_fields: ['FormattedID','Name','PercentDoneByStoryCount'],
-    story_fields: [],
+    story_fields: ['FormattedID','Name'],
     logger: new Rally.technicalservices.Logger(),
     items: [
         {xtype:'container',itemId:'selector_box',margin: 10, layout: { type: 'hbox'} },
@@ -37,6 +37,7 @@ Ext.define('CustomApp', {
             closable: true,
             draggable: true,
             height: 200,
+            pi_fields: me.pi_fields,
             listeners: {
                 scope: this,
                 close: function(dialog) {
@@ -46,6 +47,11 @@ Ext.define('CustomApp', {
                         me.pi_fields.push(chosen_field.name);
                     });
                     me.pi_fields.push('PercentDoneByStoryCount');
+                    
+                    me.story_fields = ['FormattedID','Name'];
+                    Ext.Array.each(chosen_fields.story_fields, function(chosen_field){
+                        me.story_fields.push(chosen_field.name);
+                    });
                     me._makeTree();
                 }
             }
@@ -62,6 +68,11 @@ Ext.define('CustomApp', {
             topLevelStoreConfig: {
                 fetch: me.pi_fields
             },
+            childItemsStoreConfigForParentRecordFn: function(record) {
+                return {
+                    fetch: me.story_fields
+                }
+            },
             treeItemConfigForRecordFn: function(record){
                 var config = {
                     selectable: true
@@ -71,7 +82,8 @@ Ext.define('CustomApp', {
                     config.xtype = 'rallyconfigurabletreeitem';
                     config.displayedFields = me.pi_fields;
                 } else if(record.get('_type') === 'hierarchicalrequirement'){
-                    config.xtype = 'rallyuserstorytreeitem';
+                    config.xtype = 'rallyconfigurabletreeitem';
+                    config.displayedFields = me.story_fields;
                 } else {
                     config.xtype = 'rallytreeitem';
                 }

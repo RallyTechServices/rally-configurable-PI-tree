@@ -17,26 +17,20 @@ Ext.define('Rally.technicalservices.ConfigurableTreeItem', {
 
         getContentTpl: function(){
             var me = this;
-
-            me.logger.log(this,"display:",me.displayedFields);
             
             return Ext.create('Ext.XTemplate',
                     '<tpl if="this.canDrag()"><div class="icon drag"></div></tpl>',
                     '{[this.getActionsGear()]}',
                     '<table><tr>',
                     '<td class="ellipses leftLock">{[this.getFormattedId()]} - {Name}</td>',
-                    '<td class="ellipses">',
                     '<tpl for="this.getFieldValues()">',
-                    '<td>',
+                    '<td class="ellipses">',
                     '{.}',
                     '</td>',
                     '</tpl>',
-                    '</td>',
                     '</tr></table>',
                     '<div class="rightSide">',
-                    '<tpl if="this.displayPercentDone()">',
-                    '{[this.getPercentDone(values)]}',
-                    '</tpl>',
+                    '{[this.getRightSideDisplay()]}',
                     '</div>',
                     {
                         canDrag: function(){
@@ -45,12 +39,8 @@ Ext.define('Rally.technicalservices.ConfigurableTreeItem', {
                         getActionsGear: function(){
                             return me._buildActionsGearHtml();
                         },
-                        displayPercentDone: function(){
-                            if ( Ext.Array.indexOf(me.displayedFields,"PercentDoneByStoryCount") > -1 ) {
-                                return true;
-                            } else {
-                                return false;
-                            }
+                        getRightSideDisplay: function() {
+                            return this.getPercentDone();
                         },
                         getPercentDone: function(){
                             return me.getRecord().render('PercentDoneByStoryCount');
@@ -62,9 +52,8 @@ Ext.define('Rally.technicalservices.ConfigurableTreeItem', {
                             var values = [];
                             Ext.Array.each( me.displayedFields, function(field_name){
                                 if ( field_name !== "Name" && 
-                                    field_name !== "PercentDoneByStoryCount" &&
-                                    field_name !== "FormattedID" ){
-                                    me.logger.log(me,field_name,me.getRecord().get(field_name));
+                                        field_name !== "PercentDoneByStoryCount" &&
+                                        field_name !== "FormattedID" ){
                                     values.push(me.getRecord().render(field_name));
                                 }
                             });
