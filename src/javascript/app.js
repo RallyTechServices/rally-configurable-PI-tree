@@ -11,8 +11,28 @@ Ext.define('CustomApp', {
         {xtype:'tsinfolink'}
     ],
     launch: function() {
-        this._addButton();
-        this._makeTree();
+        var me = this;
+        
+        if ( this.getAppId() ) {
+            Rally.data.PreferenceManager.load({
+                appID: this.getAppId(),
+                success: function(prefs) {
+                    if ( prefs && prefs['rally-tech-services-pi-fields']){
+                        me.pi_fields = Ext.JSON.decode(prefs['rally-tech-services-pi-fields']);
+                    }
+                    if ( prefs && prefs['rally-tech-services-story-fields']){
+                        me.story_fields = Ext.JSON.decode(prefs['rally-tech-services-story-fields']);
+                    }
+                    me._addButton();
+                    me._makeTree();
+                }
+            });
+        } else {
+            this._addButton();
+            this._makeTree();
+            
+        }
+
     },
     _addButton: function() {
         var me = this;
@@ -52,6 +72,19 @@ Ext.define('CustomApp', {
                     Ext.Array.each(chosen_fields.story_fields, function(chosen_field){
                         me.story_fields.push(chosen_field.name);
                     });
+                    
+                    if ( me.getAppId() ) {
+                        Rally.data.PreferenceManager.update({
+                            appID: me.getAppId(),
+                            settings: {
+                                'rally-tech-services-story-fields':Ext.JSON.encode(me.story_fields),
+                                'rally-tech-services-pi-fields':Ext.JSON.encode(me.pi_fields)
+                            },
+                            success: function(updated_records, not_updated_records) {
+                                me.logger.log(this,"successfully updated",updated_records);
+                            }
+                        });
+                    }
                     me._makeTree();
                 }
             }
