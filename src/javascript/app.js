@@ -58,6 +58,7 @@ Ext.define('CustomApp', {
             draggable: true,
             height: 200,
             pi_fields: me.pi_fields,
+            story_fields: me.story_fields,
             listeners: {
                 scope: this,
                 close: function(dialog) {
