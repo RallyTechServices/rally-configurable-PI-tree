@@ -49,6 +49,7 @@ Ext.define('CustomApp', {
     _showDialog: function() {
         var me = this;
         me.logger.log(this,'_showDialog');
+        
         if ( this.dialog ) {
             this.dialog.destroy();
         }
@@ -95,6 +96,10 @@ Ext.define('CustomApp', {
     _makeTree: function() {
         var me = this;
         this.down('#tree_box').removeAll();
+        if ( this.down('#selector_box').getEl() ) {
+            
+            this.down('#selector_box').getEl().mask();
+        }
         
         this.down('#tree_box').add({
             xtype: 'rallyportfoliotree',
@@ -123,6 +128,13 @@ Ext.define('CustomApp', {
                 }
     
                 return config;
+            },
+            listeners: {
+                scope: this,
+                toplevelload: function(){
+                    this.logger.log(this,"loaded");
+                    this.down('#selector_box').getEl().unmask();
+                }
             }
         });
     }
